@@ -19,7 +19,7 @@ fun SetupNavGraph(navController: NavHostController) {
             MainScreen(games = GameMock.topRatedThisYear, onGameClick = { /*TODO*/ })
         }
         composable(BottomNavItem.Search.route) {
-            SearchScreen()
+            SearchScreen(games = GameMock.topRatedThisYear)
         }
         composable(BottomNavItem.Favorite.route) {
             FavoriteScreen()

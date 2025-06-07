@@ -1,11 +1,16 @@
 package com.microjumper.goodgamer.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -23,11 +28,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.microjumper.goodgamer.R
+import com.microjumper.goodgamer.data.model.Game
+import com.microjumper.goodgamer.mock.GameMock
+import com.microjumper.goodgamer.ui.components.GameCard
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
 @Composable
-fun SearchScreen() {
+fun SearchScreen(games: List<Game>) {
     var searchQuery by remember { mutableStateOf("") }
+
+    // Filter games based on search query
+    val filteredGames = remember(games, searchQuery) {
+        if (searchQuery.isBlank()) {
+            emptyList()
+        } else {
+            games.filter { game ->
+                game.name.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -48,8 +67,6 @@ fun SearchScreen() {
                     value = searchQuery,
                     onValueChange = { newValue ->
                         searchQuery = newValue
-                        // TODO: Implement actual search logic here, e.g., call a ViewModel function
-                        println("Search query in SearchScreen: $searchQuery")
                     },
                     label = { Text("Search Games...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
@@ -65,20 +82,36 @@ fun SearchScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // TODO: Display search results here.
-            // You might use a LazyColumn or LazyVerticalGrid for the results.
-            if (searchQuery.isNotEmpty()) {
+            if (searchQuery.isNotEmpty() && filteredGames.isEmpty()) {
                 Text(
-                    text = "Showing results for: \"$searchQuery\"",
-                    modifier = Modifier.padding(16.dp)
+                    text = "No games found for \"$searchQuery\"",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.bodyLarge
                 )
-                // Example placeholder for results list
-                // LazyColumn { items(filteredGames) { game -> GameCard(game) } }
-            } else {
+            } else if (searchQuery.isBlank()) {
                 Text(
                     text = "Start typing to search for games...",
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.bodyLarge
                 )
+            } else {
+                Text(
+                    text = "Results for \"$searchQuery\"",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(filteredGames, key = { it.id }) { game ->
+                        GameCard(game = game, onClick = { /* TODO: Handle game click */ })
+                    }
+                }
             }
         }
     }
@@ -87,7 +120,7 @@ fun SearchScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSearchScreen() {
-    GoodGamerTheme { // Use your actual theme
-        SearchScreen()
+    GoodGamerTheme {
+        SearchScreen(games = GameMock.topRatedThisYear)
     }
 }
