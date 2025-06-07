@@ -40,7 +40,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -57,6 +56,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Coil for image loading in Jetpack Compose
     implementation(libs.coil.compose)
+    // Coil OkHttp library for network operations
     implementation(libs.coil.network.okhttp)
+
+    // Navigation component for Jetpack Compose
+    implementation(libs.androidx.navigation.compose)
 }
