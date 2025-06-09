@@ -26,7 +26,7 @@ import com.microjumper.goodgamer.ui.components.GameCard
 @Composable
 fun MainScreen(
     games: List<Game>,
-    onGameClick: (Game) -> Unit,
+    onGameClick: (Long) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             items(games, key = { it.id }) { game ->
-                GameCard(game = game, onClick = onGameClick)
+                GameCard(game = game, onClick = { onGameClick(game.id) })
             }
         }
     }
