@@ -19,13 +19,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.microjumper.goodgamer.R
-import com.microjumper.goodgamer.data.model.Game
-import com.microjumper.goodgamer.mock.GameMock
+import com.microjumper.goodgamer.data.model.GameSummary
+import com.microjumper.goodgamer.mock.GameSummaryMock
 import com.microjumper.goodgamer.ui.components.GameCard
 
 @Composable
 fun MainScreen(
-    games: List<Game>,
+    gameSummaries: List<GameSummary>,
     onGameClick: (Long) -> Unit,
 ) {
     Column(
@@ -55,8 +55,8 @@ fun MainScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(games, key = { it.id }) { game ->
-                GameCard(game = game, onClick = { onGameClick(game.id) })
+            items(gameSummaries, key = { it.id }) { game ->
+                GameCard(gameSummary = game, onClick = { onGameClick(game.id) })
             }
         }
     }
@@ -66,6 +66,6 @@ fun MainScreen(
 @Composable
 fun PreviewMainScreen() {
     MaterialTheme {
-        MainScreen(games = GameMock.topRatedThisYear, onGameClick = {})
+        MainScreen(gameSummaries = GameSummaryMock.topRatedThisYear, onGameClick = {})
     }
 }

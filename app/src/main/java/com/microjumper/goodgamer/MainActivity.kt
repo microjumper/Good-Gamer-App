@@ -11,10 +11,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.microjumper.goodgamer.mock.GameMock
 import com.microjumper.goodgamer.ui.components.BottomNavigationBar
 import com.microjumper.goodgamer.ui.navigation.SetupNavGraph
-import com.microjumper.goodgamer.ui.screens.MainScreen
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
 class MainActivity : ComponentActivity() {

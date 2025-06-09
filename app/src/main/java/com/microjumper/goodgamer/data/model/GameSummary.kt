@@ -1,6 +1,6 @@
 package com.microjumper.goodgamer.data.model
 
-data class Game(
+data class GameSummary(
     val id: Long = 0,
     val name: String = "",
     val released: String = "",

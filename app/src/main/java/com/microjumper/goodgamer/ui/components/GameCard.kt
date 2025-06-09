@@ -19,19 +19,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.microjumper.goodgamer.data.model.Game
+import com.microjumper.goodgamer.data.model.GameSummary
 
 @Composable
 fun GameCard(
-    game: Game,
-    onClick: (Game) -> Unit,
+    gameSummary: GameSummary,
+    onClick: (GameSummary) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(4f / 3f)
-            .clickable { onClick(game) },
+            .clickable { onClick(gameSummary) },
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -39,8 +39,8 @@ fun GameCard(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
-                model = game.backgroundImage,
-                contentDescription = game.name,
+                model = gameSummary.backgroundImage,
+                contentDescription = gameSummary.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -53,7 +53,7 @@ fun GameCard(
                 color = MaterialTheme.colorScheme.surface
             ) {
                 Text(
-                    text = game.name,
+                    text = gameSummary.name,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

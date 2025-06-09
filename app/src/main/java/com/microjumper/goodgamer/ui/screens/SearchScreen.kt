@@ -28,21 +28,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.microjumper.goodgamer.R
-import com.microjumper.goodgamer.data.model.Game
-import com.microjumper.goodgamer.mock.GameMock
+import com.microjumper.goodgamer.data.model.GameSummary
+import com.microjumper.goodgamer.mock.GameSummaryMock
 import com.microjumper.goodgamer.ui.components.GameCard
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
 @Composable
-fun SearchScreen(games: List<Game>) {
+fun SearchScreen(gameSummaries: List<GameSummary>) {
     var searchQuery by remember { mutableStateOf("") }
 
     // Filter games based on search query
-    val filteredGames = remember(games, searchQuery) {
+    val filteredGames = remember(gameSummaries, searchQuery) {
         if (searchQuery.isBlank()) {
             emptyList()
         } else {
-            games.filter { game ->
+            gameSummaries.filter { game ->
                 game.name.contains(searchQuery, ignoreCase = true)
             }
         }
@@ -109,7 +109,7 @@ fun SearchScreen(games: List<Game>) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(filteredGames, key = { it.id }) { game ->
-                        GameCard(game = game, onClick = { /* TODO: Handle game click */ })
+                        GameCard(gameSummary = game, onClick = { /* TODO: Handle game click */ })
                     }
                 }
             }
@@ -121,6 +121,6 @@ fun SearchScreen(games: List<Game>) {
 @Composable
 fun PreviewSearchScreen() {
     GoodGamerTheme {
-        SearchScreen(games = GameMock.topRatedThisYear)
+        SearchScreen(gameSummaries = GameSummaryMock.topRatedThisYear)
     }
 }

@@ -1,17 +1,22 @@
 package com.microjumper.goodgamer.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,38 +28,98 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.microjumper.goodgamer.data.model.Game
-import com.microjumper.goodgamer.mock.GameMock
+import com.microjumper.goodgamer.data.model.GameDetail
+import com.microjumper.goodgamer.mock.GameDetailMock
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
 @Composable
 fun GameDetailScreen(
-    game: Game,
+    gameDetail: GameDetail,
     onBackClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Hero section includes image, back/share/fav buttons, and game title
-        GameHeroSection(game = game, onBackClick = onBackClick)
+        GameHeroSection(gameDetail = gameDetail, onBackClick = onBackClick)
 
         // Main content
         Column(modifier = Modifier.padding(16.dp)) {
+            // Genre(s) as chip(s)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()), // Allows horizontal scrolling for many chips
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                gameDetail.genres.forEach { genre ->
+                    AssistChip(
+                        onClick = { /* TODO: Implement genre click */ },
+                        label = { Text(genre.name) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Description
             Text(
-                text = "More details about ${game.name} will go here...",
+                text = HtmlCompat.fromHtml(
+                    gameDetail.description,
+                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                ).toString(),
                 style = MaterialTheme.typography.bodyLarge
             )
-            // Add other game details here
+
+            // Rating
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(bottom = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Rating star",
+                    tint = Color(0xFFFFC107) // Gold color for star
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append(gameDetail.rating.toString())
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                // Subtle color for the suffix
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append(" / 5.0")
+                        }
+                    },
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
         }
     }
 }
 
 @Composable
 fun GameHeroSection(
-    game: Game,
+    gameDetail: GameDetail,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -66,10 +131,10 @@ fun GameHeroSection(
         // Game image with content scale
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(game.backgroundImage)
+                .data(gameDetail.backgroundImage)
                 .crossfade(true)
                 .build(),
-            contentDescription = "${game.name} background image",
+            contentDescription = "${gameDetail.name} background image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -126,16 +191,10 @@ fun GameHeroSection(
             verticalArrangement = Arrangement.Bottom
         ) {
             Text(
-                text = game.name,
+                text = gameDetail.name,
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "Rating: ${game.rating}",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 4.dp)
             )
         }
     }
@@ -145,6 +204,6 @@ fun GameHeroSection(
 @Composable
 fun PreviewGameDetailScreen() {
     GoodGamerTheme {
-        GameDetailScreen(game = GameMock.topRatedThisYear.first(), onBackClick = {})
+        GameDetailScreen(gameDetail = GameDetailMock.expedition33, onBackClick = {})
     }
 }
