@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    // Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -63,4 +66,9 @@ dependencies {
 
     // Navigation component for Jetpack Compose
     implementation(libs.androidx.navigation.compose)
+
+    // Firebase BoM
+    implementation(platform(libs.firebase.bom))
+    // Realtime Database library
+    implementation(libs.firebase.database)
 }
