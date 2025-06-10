@@ -39,7 +39,7 @@ fun GameCard(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
-                model = gameSummary.backgroundImage,
+                model = gameSummary.background_image,
                 contentDescription = gameSummary.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

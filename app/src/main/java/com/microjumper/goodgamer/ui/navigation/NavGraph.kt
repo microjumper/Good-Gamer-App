@@ -21,7 +21,7 @@ fun SetupNavGraph(navController: NavHostController) {
         startDestination = BottomNavItem.Explore.route
     ) {
         composable(BottomNavItem.Explore.route) {
-            MainScreen(gameSummaries = GameSummaryMock.topRatedThisYear, onGameClick = { gameId ->
+            MainScreen(onGameClick = { gameId ->
                 navController.navigate("gameDetail/$gameId")
             })
         }
