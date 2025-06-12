@@ -38,7 +38,7 @@ import androidx.core.text.HtmlCompat
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.microjumper.goodgamer.data.model.GameDetail
+import com.microjumper.goodgamer.data.models.GameDetail
 import com.microjumper.goodgamer.mock.GameDetailMock
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
@@ -131,7 +131,7 @@ fun GameHeroSection(
         // Game image with content scale
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(gameDetail.backgroundImage)
+                .data(gameDetail.background_image)
                 .crossfade(true)
                 .build(),
             contentDescription = "${gameDetail.name} background image",

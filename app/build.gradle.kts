@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,12 @@ plugins {
     // Google services Gradle plugin
     id("com.google.gms.google-services")
 }
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+val gameApiBaseUrl = localProperties.getProperty("GAME_BY_ID_URL")
+    ?: throw GradleException("GAME_BY_ID_URL not found in local.properties")
 
 android {
     namespace = "com.microjumper.goodgamer"
@@ -19,6 +27,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildFeatures {
+            buildConfig = true
+        }
+
+        buildConfigField("String", "GAME_BY_ID_URL", "\"$gameApiBaseUrl\"")
     }
 
     buildTypes {

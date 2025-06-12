@@ -28,13 +28,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.microjumper.goodgamer.R
-import com.microjumper.goodgamer.data.model.GameSummary
+import com.microjumper.goodgamer.data.models.Game
 import com.microjumper.goodgamer.mock.GameSummaryMock
 import com.microjumper.goodgamer.ui.components.GameCard
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
 @Composable
-fun SearchScreen(gameSummaries: List<GameSummary>) {
+fun SearchScreen(gameSummaries: List<Game>) {
     var searchQuery by remember { mutableStateOf("") }
 
     // Filter games based on search query
@@ -109,7 +109,7 @@ fun SearchScreen(gameSummaries: List<GameSummary>) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(filteredGames, key = { it.id }) { game ->
-                        GameCard(gameSummary = game, onClick = { /* TODO: Handle game click */ })
+                        GameCard(game = game, onClick = { /* TODO: Handle game click */ })
                     }
                 }
             }

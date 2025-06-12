@@ -34,14 +34,14 @@ import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.microjumper.goodgamer.R
-import com.microjumper.goodgamer.data.model.GameSummary
+import com.microjumper.goodgamer.data.models.Game
 import com.microjumper.goodgamer.ui.components.GameCard
 
 private const val TAG = "MainScreen"
 
 @Composable
 fun MainScreen(onGameClick: (Long) -> Unit) {
-    var gameSummaries by remember { mutableStateOf<List<GameSummary>>(emptyList()) }
+    var gameSummaries by remember { mutableStateOf<List<Game>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     val database = remember { Firebase.database }
@@ -54,7 +54,7 @@ fun MainScreen(onGameClick: (Long) -> Unit) {
     DisposableEffect(Unit) {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                gameSummaries = snapshot.getValue<List<GameSummary>>() as List<GameSummary>
+                gameSummaries = snapshot.getValue<List<Game>>() as List<Game>
                 isLoading = false
                 Log.d(TAG, "Loaded ${gameSummaries.size} games")
             }
@@ -84,7 +84,7 @@ fun MainScreen(onGameClick: (Long) -> Unit) {
 
 @Composable
 private fun MainScreenContent(
-    gameSummaries: List<GameSummary>,
+    gameSummaries: List<Game>,
     isLoading: Boolean,
     onGameClick: (Long) -> Unit
 ) {
@@ -142,7 +142,7 @@ private fun EmptyView() {
 
 @Composable
 private fun GameGrid(
-    games: List<GameSummary>,
+    games: List<Game>,
     onGameClick: (Long) -> Unit
 ) {
     LazyVerticalGrid(
@@ -153,7 +153,7 @@ private fun GameGrid(
         modifier = Modifier.fillMaxSize()
     ) {
         items(games, key = { it.id }) { game ->
-            GameCard(gameSummary = game, onClick = { onGameClick(game.id) })
+            GameCard(game = game, onClick = { onGameClick(game.id) })
         }
     }
 }
