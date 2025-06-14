@@ -12,9 +12,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+
 import com.microjumper.goodgamer.data.api.GameApiService
 import com.microjumper.goodgamer.data.models.GameDetail
-import com.microjumper.goodgamer.mock.GameSummaryMock
 import com.microjumper.goodgamer.ui.screens.MainScreen
 import com.microjumper.goodgamer.ui.screens.SearchScreen
 import com.microjumper.goodgamer.ui.screens.FavoriteScreen
@@ -32,7 +32,9 @@ fun SetupNavGraph(navController: NavHostController) {
             })
         }
         composable(BottomNavItem.Search.route) {
-            SearchScreen(gameSummaries = GameSummaryMock.topRatedThisYear)
+            SearchScreen(onGameClick = { gameId ->
+                navController.navigate("gameDetail/$gameId")
+            })
         }
         composable(BottomNavItem.Favorite.route) {
             FavoriteScreen()

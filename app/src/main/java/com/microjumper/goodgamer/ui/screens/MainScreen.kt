@@ -41,7 +41,7 @@ private const val TAG = "MainScreen"
 
 @Composable
 fun MainScreen(onGameClick: (Long) -> Unit) {
-    var gameSummaries by remember { mutableStateOf<List<Game>>(emptyList()) }
+    var games by remember { mutableStateOf<List<Game>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     val database = remember { Firebase.database }
@@ -54,14 +54,14 @@ fun MainScreen(onGameClick: (Long) -> Unit) {
     DisposableEffect(Unit) {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                gameSummaries = snapshot.getValue<List<Game>>() as List<Game>
+                games = snapshot.getValue<List<Game>>() as List<Game>
                 isLoading = false
-                Log.d(TAG, "Loaded ${gameSummaries.size} games")
+                Log.d(TAG, "Loaded ${games.size} games")
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "Firebase error: ${error.message}", error.toException())
-                gameSummaries = emptyList()
+                games = emptyList()
                 isLoading = false
             }
         }
@@ -76,7 +76,7 @@ fun MainScreen(onGameClick: (Long) -> Unit) {
     }
 
     MainScreenContent(
-        gameSummaries = gameSummaries,
+        gameSummaries = games,
         isLoading = isLoading,
         onGameClick = currentOnGameClick
     )

@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -22,31 +20,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 import com.microjumper.goodgamer.R
+import com.microjumper.goodgamer.data.api.GameApiService
 import com.microjumper.goodgamer.data.models.Game
-import com.microjumper.goodgamer.mock.GameSummaryMock
 import com.microjumper.goodgamer.ui.components.GameCard
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme
 
-@Composable
-fun SearchScreen(gameSummaries: List<Game>) {
-    var searchQuery by remember { mutableStateOf("") }
+import kotlinx.coroutines.launch
 
-    // Filter games based on search query
-    val filteredGames = remember(gameSummaries, searchQuery) {
-        if (searchQuery.isBlank()) {
-            emptyList()
-        } else {
-            gameSummaries.filter { game ->
-                game.name.contains(searchQuery, ignoreCase = true)
-            }
-        }
-    }
+@Composable
+fun SearchScreen(onGameClick: (Long) -> Unit) {
+    // State for the search query input
+    var query by remember { mutableStateOf("") }
+
+    // State for the list of games fetched from the API
+    var games by remember { mutableStateOf<List<Game>>(emptyList()) }
+
+    // State for loading and error indication
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Coroutine scope for performing asynchronous operations
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -63,64 +66,81 @@ fun SearchScreen(gameSummaries: List<Game>) {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                // Search text field
                 OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { newValue ->
-                        searchQuery = newValue
+                    value = query,
+                    onValueChange = { newQuery ->
+                        query = newQuery
+                        // Trigger a new search only when the query changes
+                        coroutineScope.launch {
+                            if (query.isNotEmpty()) {
+                                try {
+                                    isLoading = true
+                                    errorMessage = null
+                                    // Fetch matching games from the API
+                                    games = GameApiService.searchGamesByName(query)
+                                } catch (e: Exception) {
+                                    // Handle any errors during the API call
+                                    errorMessage = "Failed to load games."
+                                } finally {
+                                    isLoading = false
+                                }
+                            } else {
+                                // Clear the games list if the query becomes empty
+                                games = emptyList()
+                            }
+                        }
                     },
-                    label = { Text("Search Games...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.extraLarge
                 )
             }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            if (searchQuery.isNotEmpty() && filteredGames.isEmpty()) {
-                Text(
-                    text = "No games found for \"$searchQuery\"",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            } else if (searchQuery.isBlank()) {
-                Text(
-                    text = "Start typing to search for games...",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            } else {
-                Text(
-                    text = "Results for \"$searchQuery\"",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+        },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.Top
+            ) {
+                // Display a loading indicator if the data is loading
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
 
+                // Display error message, if any
+                errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                // Display the grid of games
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(filteredGames, key = { it.id }) { game ->
-                        GameCard(game = game, onClick = { /* TODO: Handle game click */ })
+                    items(games) { game ->
+                        GameCard(
+                            game = game,
+                            onClick = { onGameClick(game.id) },
+                        )
                     }
                 }
             }
         }
-    }
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewSearchScreen() {
     GoodGamerTheme {
-        SearchScreen(gameSummaries = GameSummaryMock.topRatedThisYear)
+        SearchScreen(
+            onGameClick = {}
+        )
     }
 }

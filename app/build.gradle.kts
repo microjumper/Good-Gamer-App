@@ -12,8 +12,10 @@ plugins {
 val localProperties = Properties().apply {
     load(rootProject.file("local.properties").inputStream())
 }
-val gameApiBaseUrl = localProperties.getProperty("GAME_BY_ID_URL")
+val gameByIdUrl = localProperties.getProperty("GAME_BY_ID_URL")
     ?: throw GradleException("GAME_BY_ID_URL not found in local.properties")
+val searchGamesUrl = localProperties.getProperty("SEARCH_GAMES_URL")
+    ?: throw GradleException("SEARCH_GAMES_URL not found in local.properties")
 
 android {
     namespace = "com.microjumper.goodgamer"
@@ -32,7 +34,8 @@ android {
             buildConfig = true
         }
 
-        buildConfigField("String", "GAME_BY_ID_URL", "\"$gameApiBaseUrl\"")
+        buildConfigField("String", "GAME_BY_ID_URL", "\"$gameByIdUrl\"")
+        buildConfigField("String", "SEARCH_GAMES_URL", "\"$searchGamesUrl\"")
     }
 
     buildTypes {
