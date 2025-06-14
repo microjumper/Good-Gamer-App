@@ -27,14 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+
 import com.microjumper.goodgamer.R
 import com.microjumper.goodgamer.data.models.Game
+import com.microjumper.goodgamer.mock.GameMock
 import com.microjumper.goodgamer.ui.components.GameCard
 
 private const val TAG = "MainScreen"
@@ -161,7 +164,9 @@ private fun GameGrid(
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainScreen() {
-    MaterialTheme {
-        MainScreen(onGameClick = {})
-    }
+    MainScreenContent(
+        gameSummaries = GameMock.topRatedThisYear,
+        isLoading = false,
+        onGameClick = {}
+    )
 }

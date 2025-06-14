@@ -2,7 +2,7 @@ package com.microjumper.goodgamer.mock
 
 import com.microjumper.goodgamer.data.models.Game
 
-object GameSummaryMock {
+object GameMock {
     val topRatedThisYear = listOf(
         Game(
             983210,

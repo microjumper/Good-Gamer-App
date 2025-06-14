@@ -35,9 +35,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+
 import com.microjumper.goodgamer.data.models.GameDetail
 import com.microjumper.goodgamer.mock.GameDetailMock
 import com.microjumper.goodgamer.ui.theme.GoodGamerTheme

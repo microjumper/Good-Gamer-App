@@ -80,7 +80,7 @@ fun SearchScreen(onGameClick: (Long) -> Unit) {
                                     errorMessage = null
                                     // Fetch matching games from the API
                                     games = GameApiService.searchGamesByName(query)
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     // Handle any errors during the API call
                                     errorMessage = "Failed to load games."
                                 } finally {
@@ -104,7 +104,11 @@ fun SearchScreen(onGameClick: (Long) -> Unit) {
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .padding(end = 8.dp)
-                                    .clickable { query = "" })
+                                    .clickable {
+                                        query = ""
+                                        games = emptyList()
+                                    }
+                            )
                         }
                     }
                 )
