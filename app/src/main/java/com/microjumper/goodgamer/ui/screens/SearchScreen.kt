@@ -1,5 +1,6 @@
 package com.microjumper.goodgamer.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -91,6 +92,21 @@ fun SearchScreen(onGameClick: (Long) -> Unit) {
                             }
                         }
                     },
+                    label = { Text(text = stringResource(id = R.string.search_hint)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    shape = MaterialTheme.shapes.medium, // Rounded corners
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            Text(
+                                text = "Clear",
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .clickable { query = "" })
+                        }
+                    }
                 )
             }
         },
