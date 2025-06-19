@@ -5,13 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -39,11 +45,17 @@ import com.microjumper.goodgamer.R
 import com.microjumper.goodgamer.data.models.Game
 import com.microjumper.goodgamer.mock.GameMock
 import com.microjumper.goodgamer.ui.components.GameCard
+import com.microjumper.goodgamer.ui.navigation.BottomNavItem
 
 private const val TAG = "MainScreen"
 
 @Composable
-fun MainScreen(onGameClick: (Long) -> Unit) {
+fun MainScreen(
+    navController: NavHostController,
+    onGameClick: (Long) -> Unit
+) {
+    val auth = Firebase.auth
+
     var games by remember { mutableStateOf<List<Game>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -81,7 +93,9 @@ fun MainScreen(onGameClick: (Long) -> Unit) {
     MainScreenContent(
         gameSummaries = games,
         isLoading = isLoading,
-        onGameClick = currentOnGameClick
+        onGameClick = currentOnGameClick,
+        auth = auth,
+        navController = navController,
     )
 }
 
@@ -89,7 +103,9 @@ fun MainScreen(onGameClick: (Long) -> Unit) {
 private fun MainScreenContent(
     gameSummaries: List<Game>,
     isLoading: Boolean,
-    onGameClick: (Long) -> Unit
+    onGameClick: (Long) -> Unit,
+    auth: FirebaseAuth,
+    navController: NavHostController
 ) {
     Column(
         modifier = Modifier
@@ -97,11 +113,30 @@ private fun MainScreenContent(
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        Text(
-            text = stringResource(id = R.string.app_name),
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Button(onClick = {
+                auth.signOut()
+
+                navController.navigate("login") {
+                }
+            }
+            ) {
+                Text(text = "Logout")
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -167,6 +202,8 @@ fun PreviewMainScreen() {
     MainScreenContent(
         gameSummaries = GameMock.topRatedThisYear,
         isLoading = false,
-        onGameClick = {}
+        onGameClick = {},
+        auth = TODO(),
+        navController = TODO()
     )
 }

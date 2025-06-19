@@ -88,4 +88,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     // Realtime Database library
     implementation(libs.firebase.database)
+
+    // Firebase Auth
+    implementation(libs.firebase.auth.ktx)
+    // Google Sign-In
+    implementation(libs.play.services.auth)
 }

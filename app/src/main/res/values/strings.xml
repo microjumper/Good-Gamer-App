@@ -1,4 +1,6 @@
 <resources>
+    <string name="default_web_client_id">205167515259-2lkvvd9mksbs7ht4jt27h8uo8gcje8f6.apps.googleusercontent.com</string>
+
     <string name="app_name">Good Gamer</string>
     <string name="top_rated_this_year">Top Rated Games of The Year</string>
     <string name="search_hint">Search for a specific title</string>

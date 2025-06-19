@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.microjumper.goodgamer.ui.components.BottomNavigationBar
 import com.microjumper.goodgamer.ui.navigation.SetupNavGraph
@@ -25,8 +26,18 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+                    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+                    val currentRoute = navBackStackEntry?.destination?.route
+
+                    // Define routes where BottomNavigationBar should NOT be shown
+                    val showBottomBar = currentRoute != "login"
+
                     Scaffold(
-                        bottomBar = { BottomNavigationBar(navController = navController) }
+                        bottomBar = {
+                            if (showBottomBar) {
+                                BottomNavigationBar(navController = navController)
+                            }
+                        }
                     ) { paddingValues ->
                         Box(modifier = Modifier.padding(paddingValues)) {
                             SetupNavGraph(navController = navController)
