@@ -1,5 +1,7 @@
 package com.microjumper.goodgamer.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +41,8 @@ import androidx.core.text.HtmlCompat
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 import com.microjumper.goodgamer.data.models.GameDetail
 import com.microjumper.goodgamer.mock.GameDetailMock
@@ -125,6 +129,8 @@ fun GameHeroSection(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -174,7 +180,13 @@ fun GameHeroSection(
 
             // Right-side - Favorite
             Row {
-                IconButton(onClick = { /* TODO: Implement favorite */ }) {
+                IconButton(onClick = {
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (userId != null) {
+                        saveGameToFavorites(userId, gameDetail, context)
+                    }
+
+                }) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "Favorite",
@@ -201,6 +213,26 @@ fun GameHeroSection(
         }
     }
 }
+
+fun saveGameToFavorites(userId: String, game: GameDetail, context: Context) {
+    val database = FirebaseDatabase.getInstance()
+    val gameRef = database.getReference("favorites").child(userId).child(game.id.toString())
+
+    val gameData = mapOf(
+        "id" to game.id,
+        "name" to game.name,
+        "background" to game.background_image
+    )
+
+    gameRef.setValue(gameData)
+        .addOnSuccessListener {
+            Toast.makeText(context, "Game added to favorites", Toast.LENGTH_SHORT).show()
+        }
+        .addOnFailureListener {
+            Toast.makeText(context, "Failed to add game: ${it.message}", Toast.LENGTH_SHORT).show()
+        }
+}
+
 
 @Preview(showBackground = true)
 @Composable
