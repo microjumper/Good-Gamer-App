@@ -68,7 +68,7 @@ fun GameDetailScreen(
             ) {
                 gameDetail.genres.forEach { genre ->
                     AssistChip(
-                        onClick = { /* TODO: Implement genre click */ },
+                        onClick = { },
                         label = { Text(genre.name) }
                     )
                 }

@@ -1,14 +1,20 @@
 package com.microjumper.goodgamer.ui.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +23,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -31,6 +38,7 @@ import com.microjumper.goodgamer.data.models.Game
 fun FavoriteScreen() {
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val favorites = remember { mutableStateListOf<Game>() }
+    val context = LocalContext.current
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -49,7 +57,7 @@ fun FavoriteScreen() {
         // Title section
         Text(
             text = "Favorites",
-            style = MaterialTheme.typography.headlineMedium, // Adjust style as per your theme
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp),
@@ -67,14 +75,30 @@ fun FavoriteScreen() {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(favorites) { game ->
-                    Text(
-                        text = game.name,
-                        Modifier
+                items(favorites, key = { it.id }) { game ->
+                    Row(
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
-                    )
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = game.name,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(onClick = {
+                            if (userId != null) {
+                                removeFavorite(userId, game.id) {
+                                    favorites.remove(game)
+                                    Toast.makeText(context, "${game.name} removed from favorites", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Remove from favorites")
+                        }
+                    }
                 }
+
             }
         }
     }
@@ -99,4 +123,13 @@ fun fetchFavorites(userId: String, onFavoritesLoaded: (List<Game>) -> Unit) {
             Log.d("FavoriteScreen", "Failed to fetch favorites: ${error.message}")
         }
     })
+}
+
+fun removeFavorite(userId: String, gameId: Long, onRemoved: () -> Unit) {
+    val database = FirebaseDatabase.getInstance()
+    val ref = database.getReference("favorites").child(userId).child(gameId.toString())
+
+    ref.removeValue().addOnSuccessListener {
+        onRemoved()
+    }
 }
